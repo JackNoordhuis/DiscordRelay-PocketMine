@@ -1,0 +1,13 @@
+{
+  "name": "jacknoordhuis/pm-discord-relay",
+  "type": "project",
+  "authors": [
+    {
+      "name": "Jack Noordhuis",
+      "email": "me@jacknoordhuis.net"
+    }
+  ],
+  "require": {
+    "charlottedunois/yasmin": "^0.4.2"
+  }
+}

@@ -1,0 +1,14 @@
+###  Discord-Relay v0.0.1-dev#1 configuration file  ###
+general:
+  bot:
+    token: your-bot-token-here
+    channels:
+      - name: general
+        discord-id: channel ID
+        options:
+          relay-from-discord: true
+          relay-to-discord: true
+      - name: log
+        discord-id: channel ID
+        options:
+          relay-console: true
