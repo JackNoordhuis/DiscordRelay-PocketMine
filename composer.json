@@ -8,6 +8,7 @@
     }
   ],
   "require": {
+    "ext-json": "*",
     "charlottedunois/yasmin": "^0.4.2"
   }
 }
