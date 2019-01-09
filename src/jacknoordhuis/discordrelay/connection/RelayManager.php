@@ -21,7 +21,9 @@ namespace jacknoordhuis\discordrelay\connection;
 use CharlotteDunois\Yasmin\Client as DiscordClient;
 use CharlotteDunois\Yasmin\Interfaces\TextChannelInterface;
 use CharlotteDunois\Yasmin\Models\Message;
+use CharlotteDunois\Yasmin\Models\TextChannel;
 use jacknoordhuis\discordrelay\connection\models\RelayChannel;
+use jacknoordhuis\discordrelay\connection\models\RelayMessage;
 use jacknoordhuis\discordrelay\connection\models\RelayOptions;
 use jacknoordhuis\discordrelay\connection\utils\RelayLoggerAttachment;
 use pocketmine\utils\MainLogger;
@@ -45,11 +47,14 @@ class RelayManager {
 	/** @var DiscordClient */
 	private $client;
 
-	/** @var RelayLoggerAttachment */
-	private $loggerAttachment;
+	/** @var RelayLoggerAttachment|null */
+	private $loggerAttachment = null;
 
-	/** @var RelayChannel[]|null */
-	private $consoleRelayChannels = null;
+	/** @var RelayChannel[] */
+	private $discordRelayChannels = [];
+
+	/** @var RelayChannel[] */
+	private $consoleRelayChannels = [];
 
 	public function __construct(RelayThread $thread) {
 		$this->thread = $thread;
@@ -89,15 +94,6 @@ class RelayManager {
 			}
 		});
 
-		// loop through the channels to see if we need to relay console messages
-		foreach($this->options->channels() as $channel) {
-			if($channel->hasFlag(RelayChannel::FLAG_RELAY_CONSOLE)) {
-				// add the attachment to the logger at the first console relay channel
-				$this->logger()->addAttachment($this->loggerAttachment = new RelayLoggerAttachment());
-				break;
-			}
-		}
-
 		// create the client instance
 		$this->client = new DiscordClient([], $this->loop);
 
@@ -126,6 +122,31 @@ class RelayManager {
 	public function ready() : void {
 		$this->logger()->debug("Logged in as " . $this->client->user->tag . " created on " . $this->client->user->createdAt->format("d.m.Y H:i:s"));
 
+		// warn of channels that can't be found or aren't text channels
+		foreach($this->options->channels() as $channel) {
+			try {
+				if(!($c = $this->client->channels->resolve($channel->id())) instanceof TextChannel) {
+					$this->logger->warning("Unable to setup bridge for non-text channel #{$channel->id()}.");
+				}
+
+				// check if we should relay incoming messages from this channel
+				if($channel->hasFlag(RelayChannel::FLAG_RELAY_FROM_DISCORD)) {
+					$this->discordRelayChannels[$c->id] = $channel; // index the channels by the discord channel id
+				}
+
+				// check if we should relay console messages to this channel
+				if($channel->hasFlag(RelayChannel::FLAG_RELAY_CONSOLE)) {
+					$this->consoleRelayChannels[$c->id] = $channel; // index the channels by the discord channel id
+					// add the attachment to the logger at the first console relay channel
+					if($this->loggerAttachment === null) {
+						$this->logger()->addAttachment($this->loggerAttachment = new RelayLoggerAttachment());
+					}
+				}
+			} catch(\InvalidArgumentException $e) {
+				$this->logger->warning("Unable to find channel #{$channel->id()}, a bridge will not be setup for this channel.");
+			}
+		}
+
 		// only register the timer if the logger attachment was created
 		if($this->loggerAttachment !== null) {
 			// add a repeating callback to the loop to relay console messages
@@ -144,10 +165,12 @@ class RelayManager {
 	 * @param Message $message
 	 */
 	public function message(Message $message) : void {
-		if(($relayChannel = $this->options->channel($message->channel->id)) !== null) {
-			if($relayChannel->hasFlag(RelayChannel::FLAG_RELAY_FROM_DISCORD)) {
-				$this->logger()->info("[DiscordRelay] #{$relayChannel->alias()} | {$message->author->username}: {$message->content}");
-			}
+		if(isset($this->discordRelayChannels[$id = $message->channel->id])) {
+			$relay = new RelayMessage();
+			$relay->setChannel($this->discordRelayChannels[$id]);
+			$relay->setAuthor($message->author->username);
+			$relay->setContent($message->content);
+			$this->thread->pushInboundMessage($relay->serialize());
 		}
 	}
 
@@ -164,15 +187,6 @@ class RelayManager {
 	 * All logic to relay the console output to discord.
 	 */
 	public function relayConsoleMessages() : void {
-		if($this->consoleRelayChannels === null) {
-			$this->consoleRelayChannels = [];
-			foreach($this->options->channels() as $channel) {
-				if($channel->hasFlag(RelayChannel::FLAG_RELAY_CONSOLE)) {
-					$this->consoleRelayChannels[] = $channel;
-				}
-			}
-		}
-
 		while($message = $this->loggerAttachment->getOutboundMessage()) {
 			foreach($this->consoleRelayChannels as $channel) {
 				/** @var TextChannelInterface $discordChannel */

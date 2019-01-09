@@ -20,6 +20,7 @@ namespace jacknoordhuis\discordrelay;
 
 use jacknoordhuis\discordrelay\connection\RelayThread;
 use jacknoordhuis\discordrelay\connection\models\RelayOptions;
+use jacknoordhuis\discordrelay\task\RelayInboundMessages;
 use jacknoordhuis\discordrelay\utils\AutoloaderLoader;
 use jacknoordhuis\discordrelay\utils\config\BotConfigurationLoader;
 use pocketmine\plugin\PluginBase;
@@ -35,6 +36,9 @@ class DiscordRelay extends PluginBase {
 
 	/** @var RelayOptions */
 	private $discordRelayOptions;
+
+	/** @var RelayInboundMessages */
+	private $relayInboundTask = null;
 
 	/** @var BotConfigurationLoader */
 	private $botConfigLoader;
@@ -52,16 +56,24 @@ class DiscordRelay extends PluginBase {
 
 		$this->relayThreadSleeper = new SleeperNotifier();
 		$this->discordThread = new RelayThread($this->getServer()->getLogger(), $this->discordRelayOptions->serialize(), $this->relayThreadSleeper);
+
+		$this->getScheduler()->scheduleRepeatingTask($this->relayInboundTask = new RelayInboundMessages($this), 20);
 	}
 
 	public function onDisable() {
 		if($this->discordThread !== null) {
 			$this->discordThread->shutdown();
 		}
+
+		$this->getScheduler()->cancelTask($this->relayInboundTask->getTaskId());
 	}
 
 	public function getRelayOptions() : RelayOptions {
 		return $this->discordRelayOptions;
+	}
+
+	public function getRelayThread() : RelayThread {
+		return $this->discordThread;
 	}
 
 	public function setRelayOptions(RelayOptions $options) : void {

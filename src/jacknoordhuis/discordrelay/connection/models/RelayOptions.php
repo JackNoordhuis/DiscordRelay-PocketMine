@@ -59,36 +59,32 @@ class RelayOptions implements \Serializable {
 	}
 
 	public function serialize() {
-		return json_encode([
-			"token" => $this->token,
-			"channels" => array_map(function(RelayChannel $channel) {
-				return $channel->serialize();
-			}, $this->channels),
-		]);
+		return json_encode($this->toArray(false));
 	}
 
 	public function unserialize($serialized) {
-		$data = json_decode($serialized, true);
-
-		$this->token = $data["token"];
-		$this->channels = array_map(function(string $serializedChannel) {
-			$channel = new RelayChannel();
-			$channel->unserialize($serializedChannel);
-			return $channel;
-		}, $data["channels"]);
+		$this->fromArray(json_decode($serialized, true));
 	}
 
 	public function __toString() {
 		return json_encode($this->toArray());
 	}
 
-	public function toArray() : array {
+	public function toArray(bool $safe = true) : array {
 		return [
-			"token" => str_repeat("*", strlen($this->token)),
+			"token" => $safe ? str_repeat("*", 8) : $this->token,
 			"channels" => array_map(function(RelayChannel $channel) {
 				return $channel->toArray();
 			}, $this->channels),
 		];
+	}
+
+	public function fromArray(array $data) : void {
+		$this->token = $data["token"];
+		foreach($data["channels"] as $key => $channel) {
+			$this->channels[$key] = $c = new RelayChannel();
+			$c->fromArray($channel);
+		}
 	}
 
 }

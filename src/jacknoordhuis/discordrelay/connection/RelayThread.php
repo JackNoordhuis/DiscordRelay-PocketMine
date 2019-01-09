@@ -33,6 +33,12 @@ class RelayThread extends Thread {
 	/** @var string */
 	protected $options;
 
+	/** @var \Threaded */
+	protected $inboundMessages;
+
+	/** @var \Threaded */
+	protected $outboundMessages;
+
 	/** @var SleeperNotifier */
 	protected $mainThreadNotifier;
 
@@ -43,6 +49,9 @@ class RelayThread extends Thread {
 		$this->logger = $logger;
 		$this->options = $options;
 		$this->mainThreadNotifier = $sleeper;
+
+		$this->inboundMessages = new \Threaded;
+		$this->outboundMessages = new \Threaded;
 
 		$this->start(PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS);
 	}
@@ -78,6 +87,48 @@ class RelayThread extends Thread {
 		$options = new RelayOptions();
 		$options->unserialize($this->options);
 		return $options;
+	}
+
+	/**
+	 * @return \Threaded
+	 */
+	public function getInboundMessages() : \Threaded {
+		return $this->inboundMessages;
+	}
+
+	/**
+	 * @return \Threaded
+	 */
+	public function getOutboundMessages() : \Threaded {
+		return $this->outboundMessages;
+	}
+
+	/**
+	 * @param string $message
+	 */
+	public function pushInboundMessage(string $message) : void {
+		$this->inboundMessages[] = $message;
+	}
+
+	/**
+	 * @param string $message
+	 */
+	public function pushOutboundMessage(string $message) : void {
+		$this->outboundMessages[] = $message;
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function nextInboundMessage() : ?string {
+		return $this->inboundMessages->shift();
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function nextOutboundMessage() : ?string {
+		return $this->outboundMessages->shift();
 	}
 
 	public function handleException(\Throwable $e) {

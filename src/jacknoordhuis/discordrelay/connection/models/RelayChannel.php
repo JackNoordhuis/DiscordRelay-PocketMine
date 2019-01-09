@@ -80,11 +80,7 @@ class RelayChannel implements \Serializable {
 	}
 
 	public function unserialize($serialized) {
-		$data = json_decode($serialized, true);
-
-		$this->serverAlias = $data["name"];
-		$this->discordChannelId = $data["id"];
-		$this->flags = $data["flags"];
+		$this->fromArray(json_decode($serialized, true));
 	}
 
 	public function __toString() {
@@ -97,6 +93,12 @@ class RelayChannel implements \Serializable {
 			"id" => $this->discordChannelId,
 			"flags" => $this->flags,
 		];
+	}
+
+	public function fromArray(array $data) : void {
+		$this->serverAlias = $data["name"];
+		$this->discordChannelId = $data["id"];
+		$this->flags = $data["flags"];
 	}
 
 }
