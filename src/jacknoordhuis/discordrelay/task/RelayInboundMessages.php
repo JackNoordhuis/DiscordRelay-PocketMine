@@ -18,7 +18,7 @@ declare(strict_types=1);
 
 namespace jacknoordhuis\discordrelay\task;
 
-use jacknoordhuis\discordrelay\connection\models\RelayMessage;
+use jacknoordhuis\discordrelay\models\RelayMessage;
 use jacknoordhuis\discordrelay\DiscordRelay;
 use pocketmine\scheduler\Task;
 

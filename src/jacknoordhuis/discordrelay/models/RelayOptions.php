@@ -16,7 +16,7 @@
 
 declare(strict_types=1);
 
-namespace jacknoordhuis\discordrelay\connection\models;
+namespace jacknoordhuis\discordrelay\models;
 
 class RelayOptions implements \Serializable {
 

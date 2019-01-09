@@ -19,7 +19,7 @@ declare(strict_types=1);
 namespace jacknoordhuis\discordrelay\connection;
 
 use jacknoordhuis\discordrelay\utils\AutoloaderLoader;
-use jacknoordhuis\discordrelay\connection\models\RelayOptions;
+use jacknoordhuis\discordrelay\models\RelayOptions;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\Thread;
 use pocketmine\utils\MainLogger;

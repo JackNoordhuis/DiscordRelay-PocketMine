@@ -18,8 +18,8 @@ declare(strict_types=1);
 
 namespace jacknoordhuis\discordrelay\utils\config;
 
-use jacknoordhuis\discordrelay\connection\models\RelayChannel;
-use jacknoordhuis\discordrelay\connection\models\RelayOptions;
+use jacknoordhuis\discordrelay\models\RelayChannel;
+use jacknoordhuis\discordrelay\models\RelayOptions;
 
 class BotConfigurationLoader extends ConfigurationLoader {
 
