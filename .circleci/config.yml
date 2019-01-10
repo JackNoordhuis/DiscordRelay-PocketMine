@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: ubuntu:lastest
+      - image: ubuntu:latest
     steps:
       - run:
           name: Download & install binary
