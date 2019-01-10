@@ -18,9 +18,9 @@ declare(strict_types=1);
 
 namespace jacknoordhuis\discordrelay\utils\config;
 
-use jacknoordhuis\discordrelay\DiscordRelay;
 use jacknoordhuis\discordrelay\models\RelayChannel;
 use jacknoordhuis\discordrelay\models\RelayOptions;
+use jacknoordhuis\discordrelay\utils\DiscordTextFormat;
 
 class BotConfigurationLoader extends ConfigurationLoader {
 
@@ -56,7 +56,7 @@ class BotConfigurationLoader extends ConfigurationLoader {
 
 		$channel->setAlias($data["name"]);
 		$channel->setId((string) $data["discord-id"]);
-		$channel->setEmbedColor($data["embed-color"] ?? DiscordRelay::DEFAULT_EMBED_COLOR);
+		$channel->setEmbedColor($data["embed-color"] ?? DiscordTextFormat::LIGHT_PURPLE);
 
 		$opts = $data["options"];
 		if(($relayFrom = $opts["relay-from-discord"]?? false) and self::getBoolean($relayFrom)) {

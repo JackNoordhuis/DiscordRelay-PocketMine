@@ -27,6 +27,7 @@ use jacknoordhuis\discordrelay\models\RelayChannel;
 use jacknoordhuis\discordrelay\models\RelayMessage;
 use jacknoordhuis\discordrelay\models\RelayOptions;
 use jacknoordhuis\discordrelay\connection\utils\RelayLoggerAttachment;
+use jacknoordhuis\discordrelay\utils\DiscordTextFormat;
 use pocketmine\utils\MainLogger;
 use React\EventLoop\Factory;
 use React\EventLoop\LoopInterface;
@@ -220,11 +221,16 @@ class RelayManager {
 	 * All logic to relay the console output to discord.
 	 */
 	public function relayConsoleMessages() : void {
-		while($message = $this->loggerAttachment->getOutboundMessage()) {
+		while(($log = $this->loggerAttachment->getOutboundMessage()) !== null) {
+			$log = unserialize($log);
+
+			$embed = new MessageEmbed();
+			$embed
+				->setTitle($log["message"])
+				->setColor(DiscordTextFormat::logLevelToColor($log["level"]));
+
 			foreach($this->consoleRelayChannels as $channel) {
-				/** @var TextChannelInterface $discordChannel */
-				$discordChannel = $this->client->channels->get($channel->id());
-				$discordChannel->send($message);
+				$this->client->channels->get($channel->id())->send("", ["embed" => $embed]);
 			}
 		}
 	}

@@ -34,7 +34,10 @@ class RelayLoggerAttachment extends \ThreadedLoggerAttachment {
 	}
 
 	public function log($level, $message) {
-		$this->outboundMessages[] = TextFormat::clean($message);
+		$this->outboundMessages[] = serialize([
+			"message" => TextFormat::clean($message),
+			"level" => $level,
+		]);
 	}
 
 }

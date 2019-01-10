@@ -51,8 +51,6 @@ class DiscordRelay extends PluginBase {
 
 	const SETTINGS_CONFIG = "Settings.yml";
 
-	const DEFAULT_EMBED_COLOR = 7237304;
-
 	public function onLoad() {
 		AutoloaderLoader::load(); // hack to trigger loading the composer autoload file
 	}
