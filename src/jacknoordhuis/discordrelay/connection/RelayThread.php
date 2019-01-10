@@ -23,7 +23,6 @@ use jacknoordhuis\discordrelay\models\RelayOptions;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\Thread;
 use pocketmine\utils\MainLogger;
-use pocketmine\utils\Utils;
 
 class RelayThread extends Thread {
 
@@ -63,7 +62,7 @@ class RelayThread extends Thread {
 		AutoloaderLoader::load();
 
 		//set this after the autoloader is registered
-		set_error_handler([Utils::class, 'errorExceptionHandler']);
+		set_error_handler([$this, 'errorHandler']);
 		register_shutdown_function([$this, "shutdownHandler"]);
 
 		if($this->logger instanceof MainLogger){
@@ -132,7 +131,7 @@ class RelayThread extends Thread {
 	}
 
 	public function handleException(\Throwable $e) {
-		$this->logger->logException($e);
+		$this->getLogger()->logException($e);
 	}
 
 	public function isShutdown() : bool {
@@ -145,8 +144,29 @@ class RelayThread extends Thread {
 
 	public function shutdownHandler() {
 		if($this->shutdown !== true){
-			$this->getLogger()->emergency("RelayThread crashed!");
+			$error = error_get_last();
+			if($error !== null) { //fatal error
+				throw new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']);
+			}
 		}
+	}
+
+	/**
+	 * @param $severity
+	 * @param $message
+	 * @param $file
+	 * @param $line
+	 *
+	 * @return bool
+	 *
+	 * @throws \ErrorException
+	 */
+	public function errorHandler($severity, $message, $file, $line) {
+		if(error_reporting() & $severity) {
+			throw new \ErrorException($message, 0, $severity, $file, $line);
+		}
+
+		return true; //stfu operator
 	}
 
 }

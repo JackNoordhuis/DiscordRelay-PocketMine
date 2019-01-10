@@ -21,6 +21,7 @@ namespace jacknoordhuis\discordrelay;
 use jacknoordhuis\discordrelay\connection\RelayThread;
 use jacknoordhuis\discordrelay\event\EventManager;
 use jacknoordhuis\discordrelay\models\RelayOptions;
+use jacknoordhuis\discordrelay\task\CheckRelayThread;
 use jacknoordhuis\discordrelay\task\RelayInboundMessages;
 use jacknoordhuis\discordrelay\utils\AutoloaderLoader;
 use jacknoordhuis\discordrelay\utils\config\BotConfigurationLoader;
@@ -41,6 +42,8 @@ class DiscordRelay extends PluginBase {
 	/** @var RelayOptions */
 	private $discordRelayOptions;
 
+	/** @var CheckRelayThread */
+	private $checkRelayThreadClass = null;
 	/** @var RelayInboundMessages */
 	private $relayInboundTask = null;
 
@@ -62,6 +65,7 @@ class DiscordRelay extends PluginBase {
 
 		$this->relayThreadSleeper = new SleeperNotifier();
 		$this->discordThread = new RelayThread($this->getServer()->getLogger(), $this->discordRelayOptions->serialize(), $this->relayThreadSleeper);
+		$this->getScheduler()->scheduleRepeatingTask($this->checkRelayThreadClass = new CheckRelayThread($this), 1);
 
 		$this->getScheduler()->scheduleRepeatingTask($this->relayInboundTask = new RelayInboundMessages($this), 20);
 	}
