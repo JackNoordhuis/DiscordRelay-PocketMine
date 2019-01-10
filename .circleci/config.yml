@@ -20,8 +20,8 @@ jobs:
           command: |
             ./tests/lint.sh -p bin/php7/bin/php -d ./src/jacknoordhuis/discordrelay
       - run:
-          - name: Download Composer & Install Dependencies
-            - command: |
+          name: Download Composer & Install Dependencies
+          command: |
               wget https://raw.githubusercontent.com/composer/getcomposer.org/1b137f8bf6db3e79a38a5bc45324414a6b1f9df2/web/installer -O - -q | bin/php7/bin/php -- --quiet
               bin/php7/bin/php composer.phar install
       - run:
