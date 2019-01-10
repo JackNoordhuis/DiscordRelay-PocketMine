@@ -150,8 +150,6 @@ class RelayManager {
 	 * All logic to execute when the client is ready.
 	 */
 	public function ready() : void {
-		$this->logger()->debug("Logged in as " . $this->client->user->tag . " created on " . $this->client->user->createdAt->format("d.m.Y H:i:s"));
-
 		// warn of channels that can't be found or aren't text channels
 		foreach($this->options->channels() as $channel) {
 			try {
@@ -187,6 +185,8 @@ class RelayManager {
 
 		$this->client->user->setStatus("online");
 		$this->client->user->setGame("PocketMine Bridge");
+
+		$this->logger()->debug("Logged in as " . $this->client->user->tag . " created on " . $this->client->user->createdAt->format("d.m.Y H:i:s"));
 	}
 
 	/**
