@@ -15,4 +15,11 @@ general:
     - name: log
       discord-id: channel ID
       options:
-        relay-console: true
+        console-levels:
+          - info:
+              embed: true
+              embed-color: 15184935
+    - name: errors
+      discord-id: channel ID
+      options:
+        console-levels: [emergency, alert, critical, error]

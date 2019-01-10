@@ -20,8 +20,11 @@ namespace jacknoordhuis\discordrelay\utils\config;
 
 use jacknoordhuis\discordrelay\event\handle\DefaultChannelRelayHandler;
 use jacknoordhuis\discordrelay\models\RelayChannel;
+use jacknoordhuis\discordrelay\models\RelayLogLevel;
 use jacknoordhuis\discordrelay\models\RelayOptions;
+use jacknoordhuis\discordrelay\utils\config\exception\ConfigurationException;
 use jacknoordhuis\discordrelay\utils\DiscordTextFormat;
+use LogLevel;
 
 class BotConfigurationLoader extends ConfigurationLoader {
 
@@ -72,11 +75,47 @@ class BotConfigurationLoader extends ConfigurationLoader {
 			$channel->setFlag(RelayChannel::FLAG_RELAY_TO_DISCORD);
 		}
 
-		if(($relayConsole = $opts["relay-console"] ?? false) and self::getBoolean($relayConsole)) {
-			$channel->setFlag(RelayChannel::FLAG_RELAY_CONSOLE);
+		foreach(($opts["console-levels"] ?? []) as $level => $levelOpts) {
+			try {
+				if(is_string($level)) {
+					$channel->setConsoleLogLevel($this->loadLogLevel($level, $levelOpts));
+				} else {
+					$channel->setConsoleLogLevel($this->loadLogLevel($levelOpts, []));
+				}
+			} catch(ConfigurationException $e) {
+				$this->getPlugin()->getLogger()->warning($e->getMessage() . ", channel: #" . $channel->alias());
+			}
 		}
 
 		return $channel;
+	}
+
+	protected function loadLogLevel(string $level, array $levelOpts) : ?RelayLogLevel {
+		if(!in_array($level = strtolower($level), DiscordTextFormat::ALL_LOG_LEVELS())) {
+			throw new ConfigurationException("Attempted to register unknown log level: " . $level);
+		}
+
+		$logLevel = new RelayLogLevel();
+		$logLevel->setLevel($level);
+		$logLevel->setEmbed(true);
+		$logLevel->setEmbedColor(DiscordTextFormat::logLevelToColor($level));
+		if(is_array($levelOpts)) {
+			if(($embed = $levelOpts["embed"] ?? true)) {
+				if(isset($levelOpts["embed-color"])) {
+					if(is_int($embed["embed-color"]) and $levelOpts["embed-color"] > 16777215) {
+						throw new ConfigurationException("Attempted to register log level with invalid embed color: " . $levelOpts["embed-color"]);
+					}
+
+					$logLevel->setEmbedColor($levelOpts["embed-color"]);
+				}
+			} else {
+				$logLevel->setEmbed(false);
+			}
+
+			return $logLevel;
+		} else {
+			return $logLevel;
+		}
 	}
 
 }

@@ -164,7 +164,7 @@ class RelayManager {
 				}
 
 				// check if we should relay console messages to this channel
-				if($channel->hasFlag(RelayChannel::FLAG_RELAY_CONSOLE)) {
+				if(!empty($channel->consoleLogLevels())) {
 					$this->consoleRelayChannels[$c->id] = $channel; // index the channels by the discord channel id
 					// add the attachment to the logger at the first console relay channel
 					if($this->loggerAttachment === null) {
@@ -248,13 +248,22 @@ class RelayManager {
 	 * @param string $level
 	 */
 	protected function relayMessagesToConsole(array $messages, string $level) : void {
+		$content = implode("\n", $messages);
+
 		$embed = new MessageEmbed();
 		$embed
-			->setDescription(implode("\n", $messages))
-			->setColor(DiscordTextFormat::logLevelToColor($level));
+			->setDescription($content);
 
 		foreach($this->consoleRelayChannels as $channel) {
-			$this->client->channels->get($channel->id())->send("", ["embed" => $embed]);
+			if($channel->hasConsoleLogLevel($level)) {
+				$logLevel = $channel->consoleLogLevel($level);
+				if($logLevel->embed()) {
+					$embed->setColor($logLevel->embedColor());
+					$this->client->channels->get($channel->id())->send("", ["embed" => $embed]);
+				} else {
+					$this->client->channels->get($channel->id())->send($content);
+				}
+			}
 		}
 	}
 

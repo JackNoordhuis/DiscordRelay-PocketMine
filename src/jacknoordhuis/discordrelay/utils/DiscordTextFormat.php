@@ -22,6 +22,10 @@ use LogLevel;
 
 class DiscordTextFormat {
 
+	public static function ALL_LOG_LEVELS() : array {
+		return [LogLevel::EMERGENCY, LogLevel::ALERT, LogLevel::CRITICAL, LogLevel::ERROR, LogLevel::WARNING, LogLevel::NOTICE, LogLevel::INFO, LogLevel::DEBUG];
+	}
+
 	public const BLACK = 1;
 	public const DARK_BLUE = 170;
 	public const DARK_GREEN = 43520;

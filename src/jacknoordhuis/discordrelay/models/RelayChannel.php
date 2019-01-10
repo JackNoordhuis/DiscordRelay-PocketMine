@@ -48,9 +48,15 @@ class RelayChannel implements \Serializable {
 	 */
 	private $flags = 0;
 
+	/**
+	 * Array of console levels to relay to this channel
+	 *
+	 * @var RelayLogLevel[]
+	 */
+	private $consoleLogLevels = [];
+
 	public const FLAG_RELAY_FROM_DISCORD = 1; // listen for messages from discord and send them to clients on the server
 	public const FLAG_RELAY_TO_DISCORD = 2; // listen for messages on the server and send them to discord
-	public const FLAG_RELAY_CONSOLE = 3; // listen for console messages on the server and send them to discord
 
 	public function alias() : string {
 		return $this->serverAlias;
@@ -98,6 +104,25 @@ class RelayChannel implements \Serializable {
 		}
 	}
 
+	/**
+	 * @return RelayLogLevel[]
+	 */
+	public function consoleLogLevels() : array {
+		return $this->consoleLogLevels;
+	}
+
+	public function consoleLogLevel(string $level) : ?RelayLogLevel {
+		return $this->consoleLogLevels[$level] ?? null;
+	}
+
+	public function hasConsoleLogLevel(string $level) : bool {
+		return isset($this->consoleLogLevels[$level]);
+	}
+
+	public function setConsoleLogLevel(RelayLogLevel $level) : void {
+		$this->consoleLogLevels[$level->level()] = $level;
+	}
+
 	public function serialize() {
 		return json_encode($this->toArray());
 	}
@@ -116,6 +141,9 @@ class RelayChannel implements \Serializable {
 			"id" => $this->discordChannelId,
 			"embed_color" => $this->embedColor,
 			"flags" => $this->flags,
+			"log_levels" => array_map(function(RelayLogLevel $level) {
+				return $level->toArray();
+			}, $this->consoleLogLevels),
 		];
 	}
 
@@ -124,6 +152,11 @@ class RelayChannel implements \Serializable {
 		$this->discordChannelId = $data["id"];
 		$this->embedColor = $data["embed_color"];
 		$this->flags = $data["flags"];
+
+		foreach($data["log_levels"] as $key => $level) {
+			$this->consoleLogLevels[$key] = $l = new RelayLogLevel();
+			$l->fromArray($level);
+		}
 	}
 
 }
