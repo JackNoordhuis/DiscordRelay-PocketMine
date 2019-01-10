@@ -33,7 +33,7 @@ class AutoloaderLoader {
 	public static function onClassLoaded() : void {
 		if(!defined('jacknoordhuis\discordrelay\COMPOSER_AUTOLOADER_PATH')) {
 			if(\Phar::running(true) !== "") {
-				define('jacknoordhuis\discordrelay\COMPOSER_AUTOLOADER_PATH', \Phar::running(true) . "/");
+				define('jacknoordhuis\discordrelay\COMPOSER_AUTOLOADER_PATH', \Phar::running(true) . "/vendor/autoload.php");
 			} elseif(is_file($path = dirname(__DIR__, 4) . "/vendor/autoload.php")) {
 				define('jacknoordhuis\discordrelay\COMPOSER_AUTOLOADER_PATH', $path);
 			} else {

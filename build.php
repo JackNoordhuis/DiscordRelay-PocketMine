@@ -38,7 +38,7 @@ function main() : void{
 		exit(1);
 	}
 
-	$includedPaths = ["src", "vendor", "composer.lock", "LICENSE"];
+	$includedPaths = ["src", "vendor", "plugin.yml", "LICENSE"];
 	array_walk($includedPaths, function(&$path, $key){
 		$realPath = realpath($path);
 		if($realPath === false){
@@ -77,7 +77,7 @@ function main() : void{
 		exit(1);
 	}
 
-	$stub = sprintf(PLUGIN_STUB, $metadata["name"], $metadata["version"], $metadata["author"], date("r"));
+	$stub = sprintf(PLUGIN_STUB, $metadata["version"], $metadata["author"], date("r"));
 
 	foreach(buildPhar(__DIR__ . DIRECTORY_SEPARATOR . $pharName, $basePath, $includedPaths, $metadata, $stub) as $line){
 		echo $line . PHP_EOL;
