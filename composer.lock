@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3dfe649511e526b17084d36d48c548e6",
+    "content-hash": "b92cc8e5a0295eb5d4ff9e263e3b7d53",
     "packages": [
         {
             "name": "cakephp/core",
@@ -196,23 +196,24 @@
         },
         {
             "name": "charlottedunois/yasmin",
-            "version": "v0.4.2",
+            "version": "v0.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CharlotteDunois/Yasmin.git",
-                "reference": "f2cbd0b7fe66b4d3db63e92bed7cb3fb2f7cbd4c"
+                "reference": "04fee03338dd1b311014b8a0411ed8897eac4e34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CharlotteDunois/Yasmin/zipball/f2cbd0b7fe66b4d3db63e92bed7cb3fb2f7cbd4c",
-                "reference": "f2cbd0b7fe66b4d3db63e92bed7cb3fb2f7cbd4c",
+                "url": "https://api.github.com/repos/CharlotteDunois/Yasmin/zipball/04fee03338dd1b311014b8a0411ed8897eac4e34",
+                "reference": "04fee03338dd1b311014b8a0411ed8897eac4e34",
                 "shasum": ""
             },
             "require": {
-                "charlottedunois/eventemitter": "^0.1.4",
+                "charlottedunois/eventemitter": "^0.1.5",
                 "charlottedunois/validator": "^0.2.0",
                 "ext-bcmath": "*",
                 "ext-curl": "*",
+                "ext-json": "*",
                 "ext-mbstring": "*",
                 "guzzlehttp/guzzle": "^6.3.2",
                 "php": ">=7.1",
@@ -245,7 +246,7 @@
                 }
             ],
             "description": "Yasmin is a Discord API library for PHP.",
-            "time": "2018-08-18T16:29:08+00:00"
+            "time": "2018-10-21T12:03:34+00:00"
         },
         {
             "name": "doctrine/inflector",

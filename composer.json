@@ -9,6 +9,6 @@
   ],
   "require": {
     "ext-json": "*",
-    "charlottedunois/yasmin": "^0.4.2"
+    "charlottedunois/yasmin": "^0.5.1"
   }
 }
