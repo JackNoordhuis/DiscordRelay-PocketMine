@@ -90,23 +90,33 @@ class RelayOptions implements \Serializable {
 		$this->channels[$channel->id()] = $channel;
 	}
 
-	public function serialize() {
-		return json_encode($this->toArray(false));
+	public function serialize(bool $fast = false) {
+		return json_encode($this->toArray(false, $fast));
 	}
 
 	public function unserialize($serialized) {
 		$this->fromArray(json_decode($serialized, true));
 	}
 
+	public function fastUnserialize(string $serialized, RelayOptions $options) {
+		$data = json_decode($serialized, true);
+
+		$this->token = $data["token"];
+
+		foreach($data["channels"] as $channelId) {
+			$this->channels[$channelId] = $options->channel($channelId);
+		}
+	}
+
 	public function __toString() {
 		return json_encode($this->toArray());
 	}
 
-	public function toArray(bool $safe = true) : array {
+	public function toArray(bool $safe = true, bool $fast = false) : array {
 		return [
 			"token" => $safe ? str_repeat("*", 8) : $this->token,
-			"channels" => array_map(function(RelayChannel $channel) {
-				return $channel->toArray();
+			"channels" => array_map(function(RelayChannel $channel) use($fast) {
+				return $fast ? $channel->id() : $channel->toArray();
 			}, $this->channels),
 		];
 	}

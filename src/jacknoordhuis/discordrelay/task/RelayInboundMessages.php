@@ -38,7 +38,7 @@ class RelayInboundMessages extends Task {
 		$relayed = 0;
 		while(($serialized = $this->plugin->getRelayThread()->nextInboundMessage()) != null and $relayed < $this->relayedPerTick) {
 			$message = new RelayMessage();
-			$message->unserialize($serialized);
+			$message->fastUnserialize($serialized, $this->plugin->getRelayOptions());
 
 			$this->plugin->getServer()->broadcastMessage("[DiscordRelay] #{$message->channel()->alias()} | {$message->author()}: {$message->content()}");
 			$relayed++;

@@ -100,7 +100,7 @@ class RelayManager {
 			$messages = [];
 			while(($serialized = $this->thread->nextOutboundMessage()) !== null) {
 				$message = new RelayMessage();
-				$message->unserialize($serialized);
+				$message->fastUnserialize($serialized, $this->options);
 
 				$messages[$message->channel()->id()][] = $message;
 			}
@@ -203,7 +203,7 @@ class RelayManager {
 			$relay->setChannel($this->discordRelayChannels[$id]);
 			$relay->setAuthor($message->author->username);
 			$relay->setContent($message->content);
-			$this->thread->pushInboundMessage($relay->serialize());
+			$this->thread->pushInboundMessage($relay->serialize(true));
 		}
 	}
 

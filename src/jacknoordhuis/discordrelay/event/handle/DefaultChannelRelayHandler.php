@@ -41,7 +41,7 @@ class DefaultChannelRelayHandler extends EventHandler {
 		$message->setAuthor($event->getPlayer()->getName());
 		$message->setContent($event->getMessage());
 
-		$plugin->getRelayThread()->pushOutboundMessage($message->serialize());
+		$plugin->getRelayThread()->pushOutboundMessage($message->serialize(true));
 	}
 
 }

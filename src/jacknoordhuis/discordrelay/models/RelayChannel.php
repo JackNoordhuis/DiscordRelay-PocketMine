@@ -65,6 +65,10 @@ class RelayChannel implements \Serializable {
 		$this->discordChannelId = $id;
 	}
 
+	public function flags() : int {
+		return $this->flags;
+	}
+
 	public function hasFlag(int $flag) : bool {
 		return ($this->flags & (1 << $flag)) > 0;
 	}

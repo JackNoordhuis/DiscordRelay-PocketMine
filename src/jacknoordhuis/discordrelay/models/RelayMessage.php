@@ -71,21 +71,30 @@ class RelayMessage implements \Serializable  {
 		$this->content = $content;
 	}
 
-	public function serialize() {
-		return json_encode($this->toArray());
+	public function serialize(bool $fast = false) {
+		return json_encode($this->toArray($fast));
 	}
 
 	public function unserialize($serialized) {
 		$this->fromArray(json_decode($serialized, true));
 	}
 
+	public function fastUnserialize(string $serialized, RelayOptions $options) {
+		$data = json_decode($serialized, true);
+
+		$this->channel = $options->channel($data["channel"]);
+
+		$this->author = $data["author"];
+		$this->content = $data["content"];
+	}
+
 	public function __toString() {
 		return json_encode($this->toArray());
 	}
 
-	public function toArray() : array {
+	public function toArray(bool $fast = false) : array {
 		return [
-			"channel" => $this->channel->toArray(),
+			"channel" => $fast ? $this->channel->id() : $this->channel->toArray(),
 			"author" => $this->author,
 			"content" => $this->content,
 		];
