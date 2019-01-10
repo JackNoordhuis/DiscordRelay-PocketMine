@@ -16,9 +16,9 @@ general:
       discord-id: channel ID
       options:
         console-levels:
-          - info:
-              embed: true
-              embed-color: 15184935
+          info:
+            embed: true
+            embed-color: 15184935
     - name: errors
       discord-id: channel ID
       options:
