@@ -115,13 +115,17 @@ class RelayManager {
 					$content .= $message->author() . ": " . $message->content() . "\n";
 				}
 
-				$embed = new MessageEmbed();
-				$embed
-					->addField("Messages from #" . $channel->alias(), $content)
-					->setColor($channel->embedColor())
-					->setTimestamp();
+				if($channel->hasFlag(RelayChannel::FLAG_EMBED_MESSAGES)) {
+					$embed = new MessageEmbed();
+					$embed
+						->addField("Messages from #" . $channel->alias(), $content)
+						->setColor($channel->embedColor())
+						->setTimestamp();
 
-				$this->client->channels->get($channelId)->send("", ["embed" => $embed]);
+					$this->client->channels->get($channelId)->send("", ["embed" => $embed]);
+				} else {
+					$this->client->channels->get($channelId)->send($content);
+				}
 			}
 		});
 

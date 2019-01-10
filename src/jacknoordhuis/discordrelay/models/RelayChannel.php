@@ -57,6 +57,7 @@ class RelayChannel implements \Serializable {
 
 	public const FLAG_RELAY_FROM_DISCORD = 1; // listen for messages from discord and send them to clients on the server
 	public const FLAG_RELAY_TO_DISCORD = 2; // listen for messages on the server and send them to discord
+	public const FLAG_EMBED_MESSAGES = 3; // embed all normal messages (console log level configuration can override this)
 
 	public function alias() : string {
 		return $this->serverAlias;

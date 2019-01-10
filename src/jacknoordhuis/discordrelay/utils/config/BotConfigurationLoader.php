@@ -75,6 +75,10 @@ class BotConfigurationLoader extends ConfigurationLoader {
 			$channel->setFlag(RelayChannel::FLAG_RELAY_TO_DISCORD);
 		}
 
+		if(($embed = $opts["embed"] ?? false) and self::getBoolean($embed)) {
+			$channel->setFlag(RelayChannel::FLAG_EMBED_MESSAGES);
+		}
+
 		foreach(($opts["console-levels"] ?? []) as $level => $levelOpts) {
 			try {
 				if(is_string($level)) {

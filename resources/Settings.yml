@@ -10,6 +10,7 @@ general:
       discord-id: channel ID
       embed-color: 16771072
       options:
+        embed: true
         relay-from-discord: true
         relay-to-discord: true
     - name: log
