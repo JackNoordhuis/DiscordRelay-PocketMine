@@ -9,12 +9,12 @@ jobs:
           name: Update & Install Packages
           command: |
             apt-get -y update && apt-get -y install wget
+      - checkout
       - run:
           name: Download & install binary
           command: |
             wget https://jenkins.pmmp.io/job/PHP-7.2-Linux-x86_64/lastSuccessfulBuild/artifact/PHP_Linux-x86_64.tar.gz
             tar -xvf PHP_Linux-x86_64.tar.gz
-      - checkout
       - run:
           name: Lint sources
           command: |
