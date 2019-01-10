@@ -221,17 +221,40 @@ class RelayManager {
 	 * All logic to relay the console output to discord.
 	 */
 	public function relayConsoleMessages() : void {
+		$messages = [];
+		/** @var string|null $lastLevel */
+		$lastLevel = null;
+
 		while(($log = $this->loggerAttachment->getOutboundMessage()) !== null) {
 			$log = unserialize($log);
+			$level = $log["level"];
 
-			$embed = new MessageEmbed();
-			$embed
-				->setTitle($log["message"])
-				->setColor(DiscordTextFormat::logLevelToColor($log["level"]));
-
-			foreach($this->consoleRelayChannels as $channel) {
-				$this->client->channels->get($channel->id())->send("", ["embed" => $embed]);
+			if($lastLevel !== $level and $lastLevel !== null) {
+				$this->relayMessagesToConsole($messages, $lastLevel);
+				$messages = [];
 			}
+
+			$messages[] = $log["message"];
+			$lastLevel = $level;
+		}
+
+		if(!empty($messages)) {
+			$this->relayMessagesToConsole($messages, $lastLevel);
+		}
+	}
+
+	/**
+	 * @param string[] $messages
+	 * @param string $level
+	 */
+	protected function relayMessagesToConsole(array $messages, string $level) : void {
+		$embed = new MessageEmbed();
+		$embed
+			->setDescription(implode("\n", $messages))
+			->setColor(DiscordTextFormat::logLevelToColor($level));
+
+		foreach($this->consoleRelayChannels as $channel) {
+			$this->client->channels->get($channel->id())->send("", ["embed" => $embed]);
 		}
 	}
 
