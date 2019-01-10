@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace jacknoordhuis\discordrelay\utils\config;
 
+use jacknoordhuis\discordrelay\event\handle\DefaultChannelRelayHandler;
 use jacknoordhuis\discordrelay\models\RelayChannel;
 use jacknoordhuis\discordrelay\models\RelayOptions;
 use jacknoordhuis\discordrelay\utils\DiscordTextFormat;
@@ -34,6 +35,10 @@ class BotConfigurationLoader extends ConfigurationLoader {
 		$this->loadDefaultChannel($options, $general["default-channel"]);
 
 		$this->getPlugin()->setRelayOptions($options);
+
+		if($options->defaultChannelId() !== null and $options->defaultChannel()->hasFlag(RelayChannel::FLAG_RELAY_TO_DISCORD)) {
+			$this->getPlugin()->getEventManager()->registerHandler(new DefaultChannelRelayHandler());
+		}
 	}
 
 	protected function loadChannels(RelayOptions $options, array $channels) : void {

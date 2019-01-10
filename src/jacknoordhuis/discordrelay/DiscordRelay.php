@@ -20,8 +20,6 @@ namespace jacknoordhuis\discordrelay;
 
 use jacknoordhuis\discordrelay\connection\RelayThread;
 use jacknoordhuis\discordrelay\event\EventManager;
-use jacknoordhuis\discordrelay\event\handle\DefaultChannelRelayHandler;
-use jacknoordhuis\discordrelay\models\RelayChannel;
 use jacknoordhuis\discordrelay\models\RelayOptions;
 use jacknoordhuis\discordrelay\task\RelayInboundMessages;
 use jacknoordhuis\discordrelay\utils\AutoloaderLoader;
@@ -58,15 +56,12 @@ class DiscordRelay extends PluginBase {
 	public function onEnable() {
 		$this->saveResource(self::SETTINGS_CONFIG);
 
+		$this->eventManager = new EventManager($this);
+
 		$this->botConfigLoader = new BotConfigurationLoader($this, $this->getDataFolder() . self::SETTINGS_CONFIG);
 
 		$this->relayThreadSleeper = new SleeperNotifier();
 		$this->discordThread = new RelayThread($this->getServer()->getLogger(), $this->discordRelayOptions->serialize(), $this->relayThreadSleeper);
-
-		$this->eventManager = new EventManager($this);
-		if($this->discordRelayOptions->defaultChannelId() !== null and $this->discordRelayOptions->defaultChannel()->hasFlag(RelayChannel::FLAG_RELAY_TO_DISCORD)) {
-			$this->eventManager->registerHandler(new DefaultChannelRelayHandler());
-		}
 
 		$this->getScheduler()->scheduleRepeatingTask($this->relayInboundTask = new RelayInboundMessages($this), 20);
 	}
@@ -85,6 +80,10 @@ class DiscordRelay extends PluginBase {
 
 	public function getRelayThread() : RelayThread {
 		return $this->discordThread;
+	}
+
+	public function getEventManager() : EventManager {
+		return $this->eventManager;
 	}
 
 	public function setRelayOptions(RelayOptions $options) : void {
