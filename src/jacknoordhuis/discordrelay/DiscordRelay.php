@@ -19,6 +19,8 @@ declare(strict_types=1);
 namespace jacknoordhuis\discordrelay;
 
 use jacknoordhuis\discordrelay\connection\RelayThread;
+use jacknoordhuis\discordrelay\event\EventManager;
+use jacknoordhuis\discordrelay\event\handle\DefaultChannelRelayHandler;
 use jacknoordhuis\discordrelay\models\RelayOptions;
 use jacknoordhuis\discordrelay\task\RelayInboundMessages;
 use jacknoordhuis\discordrelay\utils\AutoloaderLoader;
@@ -33,6 +35,9 @@ class DiscordRelay extends PluginBase {
 
 	/** @var RelayThread */
 	private $discordThread;
+
+	/** @var EventManager */
+	private $eventManager;
 
 	/** @var RelayOptions */
 	private $discordRelayOptions;
@@ -56,6 +61,11 @@ class DiscordRelay extends PluginBase {
 
 		$this->relayThreadSleeper = new SleeperNotifier();
 		$this->discordThread = new RelayThread($this->getServer()->getLogger(), $this->discordRelayOptions->serialize(), $this->relayThreadSleeper);
+
+		$this->eventManager = new EventManager($this);
+		if($this->discordRelayOptions->defaultChannelId() !== null) {
+			$this->eventManager->registerHandler(new DefaultChannelRelayHandler());
+		}
 
 		$this->getScheduler()->scheduleRepeatingTask($this->relayInboundTask = new RelayInboundMessages($this), 20);
 	}

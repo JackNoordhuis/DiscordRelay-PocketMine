@@ -24,11 +24,13 @@ use jacknoordhuis\discordrelay\models\RelayOptions;
 class BotConfigurationLoader extends ConfigurationLoader {
 
 	public function onLoad(array $data) : void {
+		$general = $data["general"];
 		$options = new RelayOptions();
 
-		$options->setToken($data["general"]["bot"]["token"]);
+		$options->setToken($general["bot"]["token"]);
 
-		$this->loadChannels($options, $data["general"]["bot"]["channels"]);
+		$this->loadChannels($options, $general["channels"]);
+		$this->loadDefaultChannel($options, $general["default-channel"]);
 
 		$this->getPlugin()->setRelayOptions($options);
 	}
@@ -53,6 +55,15 @@ class BotConfigurationLoader extends ConfigurationLoader {
 			}
 
 			$options->addChannel($channel);
+		}
+	}
+
+	protected function loadDefaultChannel(RelayOptions $options, string $defaultChannelAlias) : void {
+		foreach($options->channels() as $channel) {
+			if($channel->alias() === $defaultChannelAlias) {
+				$options->setDefaultChannel($channel->id());
+				break;
+			}
 		}
 	}
 

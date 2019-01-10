@@ -21,6 +21,7 @@ namespace jacknoordhuis\discordrelay\connection;
 use CharlotteDunois\Yasmin\Client as DiscordClient;
 use CharlotteDunois\Yasmin\Interfaces\TextChannelInterface;
 use CharlotteDunois\Yasmin\Models\Message;
+use CharlotteDunois\Yasmin\Models\MessageEmbed;
 use CharlotteDunois\Yasmin\Models\TextChannel;
 use jacknoordhuis\discordrelay\models\RelayChannel;
 use jacknoordhuis\discordrelay\models\RelayMessage;
@@ -91,6 +92,21 @@ class RelayManager {
 		$this->loop->addPeriodicTimer(1, function() {
 			if($this->thread->isShutdown()) {
 				$this->cleanup();
+			}
+		});
+
+		// add arepeating callback to the loop to check for outgoing messages from the main thread
+		$this->loop->addPeriodicTimer(1, function() {
+			while(($serialized = $this->thread->nextOutboundMessage()) !== null) {
+				$message = new RelayMessage();
+				$message->unserialize($serialized);
+
+				$embed = new MessageEmbed();
+				$embed
+					->addField("Messages", $message->author() . ": " . $message->content())
+					->setTimestamp();
+
+				$this->client->channels->get($message->channel()->id())->send("", ["embed" => $embed]);
 			}
 		});
 
@@ -165,7 +181,10 @@ class RelayManager {
 	 * @param Message $message
 	 */
 	public function message(Message $message) : void {
-		if(isset($this->discordRelayChannels[$id = $message->channel->id])) {
+		if(
+			$message->author->id !== $this->client->user->id and // don't relay messages sent by the bot
+			isset($this->discordRelayChannels[$id = $message->channel->id]) // only relay messages for channels it is enabled for
+		) {
 			$relay = new RelayMessage();
 			$relay->setChannel($this->discordRelayChannels[$id]);
 			$relay->setAuthor($message->author->username);

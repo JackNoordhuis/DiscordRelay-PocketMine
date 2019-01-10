@@ -23,6 +23,9 @@ class RelayOptions implements \Serializable {
 	/** @var string */
 	private $token;
 
+	/** @var string */
+	private $defaultChannelId = null;
+
 	/** @var RelayChannel[] */
 	private $channels = [];
 
@@ -32,6 +35,35 @@ class RelayOptions implements \Serializable {
 
 	public function setToken(string $token) : void {
 		$this->token = $token;
+	}
+
+	/**
+	 * @return RelayChannel
+	 */
+	public function defaultChannel() {
+		return $this->channels[$this->defaultChannelId];
+	}
+
+	/**
+	 * @return string|null
+	 */
+	public function defaultChannelId() : ?string {
+		return $this->defaultChannelId;
+	}
+
+	/**
+	 * @param string $id
+	 */
+	public function setDefaultChannel(string $id) : void {
+		if($this->defaultChannelId !== null) {
+			throw new \BadMethodCallException("Unable to modify default channel id after it has been set.");
+		}
+
+		if(isset($this->channels[$id])) {
+			$this->defaultChannelId = $id;
+		} else {
+			throw new \BadMethodCallException("Cannot set the default channel to a one not managed by the relay.");
+		}
 	}
 
 	/**
