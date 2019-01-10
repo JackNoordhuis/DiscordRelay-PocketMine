@@ -35,6 +35,13 @@ class RelayChannel implements \Serializable {
 	private $discordChannelId;
 
 	/**
+	 * The default color for embeds
+	 *
+	 * @var int
+	 */
+	private $embedColor;
+
+	/**
 	 * The flags set for this channel
 	 *
 	 * @var int
@@ -63,6 +70,18 @@ class RelayChannel implements \Serializable {
 		}
 
 		$this->discordChannelId = $id;
+	}
+
+	public function embedColor() : int {
+		return $this->embedColor;
+	}
+
+	public function setEmbedColor(int $color) {
+		if($color > 16777215) {
+			throw new \InvalidArgumentException("Embed color must be less than 16777215");
+		}
+
+		$this->embedColor = $color;
 	}
 
 	public function flags() : int {
@@ -95,6 +114,7 @@ class RelayChannel implements \Serializable {
 		return [
 			"name" => $this->serverAlias,
 			"id" => $this->discordChannelId,
+			"embed_color" => $this->embedColor,
 			"flags" => $this->flags,
 		];
 	}
@@ -102,6 +122,7 @@ class RelayChannel implements \Serializable {
 	public function fromArray(array $data) : void {
 		$this->serverAlias = $data["name"];
 		$this->discordChannelId = $data["id"];
+		$this->embedColor = $data["embed_color"];
 		$this->flags = $data["flags"];
 	}
 

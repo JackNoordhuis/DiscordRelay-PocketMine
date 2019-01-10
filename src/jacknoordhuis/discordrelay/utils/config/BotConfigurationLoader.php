@@ -18,6 +18,7 @@ declare(strict_types=1);
 
 namespace jacknoordhuis\discordrelay\utils\config;
 
+use jacknoordhuis\discordrelay\DiscordRelay;
 use jacknoordhuis\discordrelay\models\RelayChannel;
 use jacknoordhuis\discordrelay\models\RelayOptions;
 
@@ -37,24 +38,7 @@ class BotConfigurationLoader extends ConfigurationLoader {
 
 	protected function loadChannels(RelayOptions $options, array $channels) : void {
 		foreach($channels as $data) {
-			$channel = new RelayChannel();
-			$channel->setAlias($data["name"]);
-			$channel->setId((string) $data["discord-id"]);
-
-			$opts = $data["options"];
-			if(($relayFrom = $opts["relay-from-discord"]?? false) and self::getBoolean($relayFrom)) {
-				$channel->setFlag(RelayChannel::FLAG_RELAY_FROM_DISCORD);
-			}
-
-			if(($relayTo = $opts["relay-to-discord"] ?? false) and self::getBoolean($relayTo)) {
-				$channel->setFlag(RelayChannel::FLAG_RELAY_TO_DISCORD);
-			}
-
-			if(($relayConsole = $opts["relay-console"] ?? false) and self::getBoolean($relayConsole)) {
-				$channel->setFlag(RelayChannel::FLAG_RELAY_CONSOLE);
-			}
-
-			$options->addChannel($channel);
+			$options->addChannel($this->loadChannel($data));
 		}
 	}
 
@@ -65,6 +49,29 @@ class BotConfigurationLoader extends ConfigurationLoader {
 				break;
 			}
 		}
+	}
+
+	protected function loadChannel(array $data) : RelayChannel {
+		$channel = new RelayChannel();
+
+		$channel->setAlias($data["name"]);
+		$channel->setId((string) $data["discord-id"]);
+		$channel->setEmbedColor($data["embed-color"] ?? DiscordRelay::DEFAULT_EMBED_COLOR);
+
+		$opts = $data["options"];
+		if(($relayFrom = $opts["relay-from-discord"]?? false) and self::getBoolean($relayFrom)) {
+			$channel->setFlag(RelayChannel::FLAG_RELAY_FROM_DISCORD);
+		}
+
+		if(($relayTo = $opts["relay-to-discord"] ?? false) and self::getBoolean($relayTo)) {
+			$channel->setFlag(RelayChannel::FLAG_RELAY_TO_DISCORD);
+		}
+
+		if(($relayConsole = $opts["relay-console"] ?? false) and self::getBoolean($relayConsole)) {
+			$channel->setFlag(RelayChannel::FLAG_RELAY_CONSOLE);
+		}
+
+		return $channel;
 	}
 
 }

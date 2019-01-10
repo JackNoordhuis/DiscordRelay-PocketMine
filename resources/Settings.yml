@@ -8,6 +8,7 @@ general:
   channels:
     - name: general
       discord-id: channel ID
+      embed-color: 16771072
       options:
         relay-from-discord: true
         relay-to-discord: true

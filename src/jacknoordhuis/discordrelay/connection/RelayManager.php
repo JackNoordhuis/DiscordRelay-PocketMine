@@ -106,18 +106,18 @@ class RelayManager {
 			}
 
 			foreach($messages as $channelId => $channelMessages) {
+				$channel = $this->options->channel((string) $channelId); // why you cast to int php???
 				$content = "";
-				$alias = "";
+
 				foreach($channelMessages as $message) {
 					/** @var $message RelayMessage */
 					$content .= $message->author() . ": " . $message->content() . "\n";
-
-					$alias = $message->channel()->alias();
 				}
 
 				$embed = new MessageEmbed();
 				$embed
-					->addField("Messages from #" . $alias, $content)
+					->addField("Messages from #" . $channel->alias(), $content)
+					->setColor($channel->embedColor())
 					->setTimestamp();
 
 				$this->client->channels->get($channelId)->send("", ["embed" => $embed]);
