@@ -271,7 +271,10 @@ class RelayManager {
 	 * All logic to execute when the thread shuts down.
 	 */
 	public function cleanup() : void {
-		$this->logger()->removeAttachment($this->loggerAttachment);
+		if($this->loggerAttachment !== null) {
+			$this->logger()->removeAttachment($this->loggerAttachment);
+		}
+
 		$this->client->user->setStatus("invisible")->done(function() {
 			$this->loop->stop();
 		});
