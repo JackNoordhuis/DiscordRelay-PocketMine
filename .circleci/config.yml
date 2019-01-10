@@ -22,7 +22,7 @@ jobs:
       - run:
           name: Download Composer & Install Dependencies
           command: |
-              wget https://raw.githubusercontent.com/composer/getcomposer.org/1b137f8bf6db3e79a38a5bc45324414a6b1f9df2/web/installer -O - -q | bin/php7/bin/php -- --quiet
+              wget https://raw.githubusercontent.com/composer/getcomposer.org/d3e09029468023aa4e9dcd165e9b6f43df0a9999/web/installer -O - -q | bin/php7/bin/php -- --quiet
               bin/php7/bin/php composer.phar install
       - run:
           name: Build plugin phar
