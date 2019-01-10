@@ -23,6 +23,7 @@ use CharlotteDunois\Yasmin\Interfaces\TextChannelInterface;
 use CharlotteDunois\Yasmin\Models\Message;
 use CharlotteDunois\Yasmin\Models\MessageEmbed;
 use CharlotteDunois\Yasmin\Models\TextChannel;
+use CharlotteDunois\Yasmin\Utils\URLHelpers;
 use jacknoordhuis\discordrelay\models\RelayChannel;
 use jacknoordhuis\discordrelay\models\RelayMessage;
 use jacknoordhuis\discordrelay\models\RelayOptions;
@@ -63,6 +64,8 @@ class RelayManager {
 		$this->logger = $thread->getLogger();
 		$this->options = $this->thread->getOptions();
 		$this->loop = Factory::create();
+
+		URLHelpers::setLoop($this->loop);
 
 		// setup the manager
 		$this->setup();
