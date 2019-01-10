@@ -21,6 +21,7 @@ namespace jacknoordhuis\discordrelay;
 use jacknoordhuis\discordrelay\connection\RelayThread;
 use jacknoordhuis\discordrelay\event\EventManager;
 use jacknoordhuis\discordrelay\event\handle\DefaultChannelRelayHandler;
+use jacknoordhuis\discordrelay\models\RelayChannel;
 use jacknoordhuis\discordrelay\models\RelayOptions;
 use jacknoordhuis\discordrelay\task\RelayInboundMessages;
 use jacknoordhuis\discordrelay\utils\AutoloaderLoader;
@@ -65,7 +66,7 @@ class DiscordRelay extends PluginBase {
 		$this->discordThread = new RelayThread($this->getServer()->getLogger(), $this->discordRelayOptions->serialize(), $this->relayThreadSleeper);
 
 		$this->eventManager = new EventManager($this);
-		if($this->discordRelayOptions->defaultChannelId() !== null) {
+		if($this->discordRelayOptions->defaultChannelId() !== null and $this->discordRelayOptions->defaultChannel()->hasFlag(RelayChannel::FLAG_RELAY_TO_DISCORD)) {
 			$this->eventManager->registerHandler(new DefaultChannelRelayHandler());
 		}
 
