@@ -97,16 +97,30 @@ class RelayManager {
 
 		// add arepeating callback to the loop to check for outgoing messages from the main thread
 		$this->loop->addPeriodicTimer(1, function() {
+			$messages = [];
 			while(($serialized = $this->thread->nextOutboundMessage()) !== null) {
 				$message = new RelayMessage();
 				$message->unserialize($serialized);
 
+				$messages[$message->channel()->id()][] = $message;
+			}
+
+			foreach($messages as $channelId => $channelMessages) {
+				$content = "";
+				$alias = "";
+				foreach($channelMessages as $message) {
+					/** @var $message RelayMessage */
+					$content .= $message->author() . ": " . $message->content() . "\n";
+
+					$alias = $message->channel()->alias();
+				}
+
 				$embed = new MessageEmbed();
 				$embed
-					->addField("Messages", $message->author() . ": " . $message->content())
+					->addField("Messages from #" . $alias, $content)
 					->setTimestamp();
 
-				$this->client->channels->get($message->channel()->id())->send("", ["embed" => $embed]);
+				$this->client->channels->get($channelId)->send("", ["embed" => $embed]);
 			}
 		});
 
