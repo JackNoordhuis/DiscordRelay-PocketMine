@@ -6,6 +6,11 @@ jobs:
       - image: ubuntu:latest
     steps:
       - run:
+          name: Update & Install Packages
+          command: |
+            apt-get update && apt-get dist-upgrade
+            apt-get install wget
+      - run:
           name: Download & install binary
           command: |
             wget https://jenkins.pmmp.io/job/PHP-7.2-Linux-x86_64/lastSuccessfulBuild/artifact/PHP_Linux-x86_64.tar.gz
