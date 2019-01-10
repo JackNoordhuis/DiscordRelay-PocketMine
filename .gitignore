@@ -94,3 +94,5 @@ $RECYCLE.BIN/
 # Composer garbage
 compoer.phar
 /vendor/
+
+DiscordRelay*.phar

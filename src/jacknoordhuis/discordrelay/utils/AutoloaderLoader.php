@@ -32,7 +32,9 @@ class AutoloaderLoader {
 	 */
 	public static function onClassLoaded() : void {
 		if(!defined('jacknoordhuis\discordrelay\COMPOSER_AUTOLOADER_PATH')) {
-			if(is_file($path = __DIR__ . "/../../../../vendor/autoload.php")) {
+			if(\Phar::running(true) !== "") {
+				define('jacknoordhuis\discordrelay\COMPOSER_AUTOLOADER_PATH', \Phar::running(true) . "/");
+			} elseif(is_file($path = dirname(__DIR__, 4) . "/vendor/autoload.php")) {
 				define('jacknoordhuis\discordrelay\COMPOSER_AUTOLOADER_PATH', $path);
 			} else {
 				MainLogger::getLogger()->debug("[DiscordRelay] Composer autoloader not found.");
