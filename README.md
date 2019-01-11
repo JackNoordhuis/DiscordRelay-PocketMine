@@ -2,6 +2,8 @@ DiscordRelay Plugin
 ===============
 _Allows you to relay messages between a PocketMine server and Discord!_
 
+[![CircleCI](https://circleci.com/gh/JackNoordhuis/DiscordRelay-PocketMine/tree/master.svg?style=svg)](https://circleci.com/gh/JackNoordhuis/DiscordRelay-PocketMine/tree/master)
+
 ### About
 
 DiscordRelay is a [PocketMine-MP](https://github.com/pmmp/PocketMine-MP) plugin that provides easy-to-configure
