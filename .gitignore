@@ -95,4 +95,5 @@ $RECYCLE.BIN/
 compoer.phar
 /vendor/
 
+/wiki/
 DiscordRelay*.phar

@@ -1,4 +1,4 @@
-###  Discord-Relay v0.0.1-dev#1 configuration file  ###
+###  Discord-Relay v0.0.1-ALPHA configuration file  ###
 general:
   # The default channel messages are relayed to and from discord.
   # Will respect both relay-from-discord and relay-to-discord flags (can be set to only relay one way.)
