@@ -38,7 +38,7 @@ function main() : void{
 		exit(1);
 	}
 
-	$includedPaths = ["src", "vendor", "plugin.yml", "LICENSE"];
+	$includedPaths = ["src", "resources", "vendor", "plugin.yml", "LICENSE"];
 	array_walk($includedPaths, function(&$path, $key){
 		$realPath = realpath($path);
 		if($realPath === false){
