@@ -28,5 +28,32 @@ and grab the latest version compatible with your PocketMine server.
 
 Found a problem with DiscordRelay? Make sure to open an issue on the [issue tracker](https://github.com/JackNoordhuis/DiscordRelay-PocketMine/issues) and we'll get it sorted!
 
+### Contributing
+
+If you wish to dig into the depths of the source code and/or contribute to this monstrosity you'll be happy to hear
+there's a helper script that will clone the source code and the wiki for you:
+
+Using curl:
+
+```bash
+curl -sL https://raw.githubusercontent.com/JackNoordhuis/DiscordRelay-PocketMine/master/clone.sh | bash -s -
+```
+
+Or using wget:
+
+```bash
+wget -q -O - https://raw.githubusercontent.com/JackNoordhuis/DiscordRelay-PocketMine/master/clone.sh | bash -s -
+```
+
+You can now make your local modifications, commit and push to github! If you wish to use this helper script but want to
+push your changes to a fork, simply run this command:
+
+```bash
+git remote set-url origin git@github.com:YOUR_USERNAME/DiscordRelay-PocketMine.git
+```
+
+If you're modifying the wiki, don't forget to `cd` into the wiki folder and `git init` before committing your changes
+or nothing will happen due to the .gitignore being set to ignore this folder as it only exists locally for your
+convenience.
 
 __The content of this repo is licensed under the GNU Lesser General Public License v3. A full copy of the license is available [here](LICENSE).__
